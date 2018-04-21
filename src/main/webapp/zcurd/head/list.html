@@ -1,0 +1,294 @@
+@include("/common/head.html"){}
+<script type="text/javascript" src="${basePath}/res/js/ZeroClipboard/ZeroClipboard.min.js"></script>
+
+
+<div id="tb" style="padding:10px 15px;">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">表单ID: </label>
+            <div class="layui-input-inline">
+                <input type="text" name="id" autocomplete="off" class="layui-input" value="">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">表单名称: </label>
+            <div class="layui-input-inline">
+                <input type="text" name="form_name" autocomplete="off" class="layui-input" value="">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">数据库表名: </label>
+            <div class="layui-input-inline">
+                <input type="text" name="table_name" autocomplete="off" class="layui-input" value="">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">数据库表名: </label>
+            <div class="layui-input-inline">
+                <select class="easyui-combobox" name="db_source" panelHeight="auto" style="width:100px" data-options="
+                    url: '${basePath}/common/getDictData?queryParams[dict_type]=db_source',
+                    valueField:'dict_key',
+                    textField:'dict_value'
+                "></select>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: left; margin:6px;">
+        <a href="#" class="easyui-linkbutton genFormBtn" iconCls="glyphicon-flash" plain="true" onclick="genForm()">生成表单</a>
+        <a href="#" class="easyui-linkbutton updateBtn" iconCls="glyphicon-pencil" plain="true" onclick="update()">编辑</a>
+        <a href="#" class="easyui-linkbutton delBtn" iconCls="glyphicon-remove" plain="true" onclick="del()">删除</a>
+        <a href="#" class="easyui-linkbutton extendBtnBtn" iconCls="glyphicon-pushpin" plain="true" onclick="extendBtn()">扩展按钮</a>
+        <a href="#" class="easyui-linkbutton extendJsBtn" iconCls="glyphicon-tags" plain="true" onclick="extendJs()">扩展JS</a>
+        <a href="#" class="easyui-linkbutton genCodeBtn" iconCls="glyphicon-log-out" plain="true" onclick="genCode()">生成代码</a>
+        <a href="#" class="easyui-linkbutton clrMetaBtn" iconCls="glyphicon-trash" plain="true" onclick="clearMeta()">清除缓存</a>
+        <div style="float:right; padding-right:40px;">
+            <button class="layui-btn layui-btn-sm layui-btn-normal" data-type="reload">
+                <i class="layui-icon">&#xe615;</i>
+                查询
+            </button>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" data-type="reset">
+                <i class="layui-icon">&#x1002;</i>
+                重置
+            </button>
+        </div>
+    </div>
+</div>
+<table id="dg" lay-filter="table"></table>
+<script type="text/html" id="toolBar">
+    <div class="layui-btn-group">
+        <button class="layui-btn layui-btn-primary layui-btn-xs" lay-event="preview">预览</button>
+        <button class="layui-btn layui-btn-primary layui-btn-xs copy-btn" lay-event="copy" data-clipboard-target="fe_text_{{d.id}}" data-id="{{d.id}}">复制</button>
+    </div>
+</script>
+<script type="text/javascript">
+
+    layui.use(['element', 'table', 'laydate'], function () {
+        var element = layui.element;
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var $ = layui.$;
+
+        var tbl = table.render({
+            elem: '#dg',
+            even: true
+            , url: 'listData'
+            , cellMinWidth: 120
+            , method: 'post'
+            , cols: [[
+                {field:'id', checkbox:true, width:'5%'},
+                {field:'id', title: 'ID', sort: false, width:'5%'},
+                {field:'form_name', title: '表单名称',sort: true},
+                {field:'table_name', title: '数据库表名', sort: true},
+                {field:'id_field', title: '主键', sort: true},
+                {field:'db_source', title: '数据源', sort: true},
+                {field:'create_time', title: '创建时间', sort: true},
+                {field:'lock', title: '操作', toolbar: '#toolBar'}
+            ]]
+            , page: true
+            , id: 'formtbl'
+            , loading: true
+            , text: {none: '暂无相关数据'}
+            , done: function (res, curr, count) {
+                //处理复制
+                $.each($(".copy-btn"), function(i, o) {
+                    copyUrl($(o).get(0), $(o).data("id"));
+                });
+            }
+        });
+
+        //监听工具条
+        table.on('tool(table)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'preview') {
+                preview(data.id, data.form_name);
+            } else if (obj.event === 'copy') {
+            }
+        });
+
+        var active = {
+            add: function () {
+                add();
+            },
+            edit: function () {
+                update();
+            },
+            del: function () {
+                del();
+            },
+            detail: function () {
+                detail();
+            },
+            reload: function () {
+                reload();
+            },
+            export: function () {
+                var param = getPara();
+                window.location.href = "exportCsv?" + $.param(param);
+            },
+            reset: function(){
+                flushPage();
+            }
+        };
+
+        $('.layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        $('.date_type').each(function(i ,o){
+            laydate.render({elem: o});
+        })
+
+    });
+
+function getPara(){
+    var param = {};
+    $("#tb :input[name]").each(function (i, item) {
+        if ($(item).val()) {
+            param['queryParams['+$(item).attr("name") +']'] = $(item).val();
+        }
+    });
+    return param;
+}
+
+//预览
+function preview(id, name) {
+	top.window.addMainTab("[预览]" + name, "${basePath}/zcurd/" + id + "/listPage");
+}
+
+//复制地址
+function copyUrl(obj, id) {
+//	var row = datagrid.datagrid("getRows")[index];
+	$('#fe_text_' + id).remove();
+	$('<textarea id="fe_text_' + id + '"></textarea>').text("/zcurd/" + id + "/listPage").hide().appendTo("body");
+	var clip = new ZeroClipboard(obj, {
+  		moviePath: "${basePath}/res/js/ZeroClipboard/ZeroClipboard.swf"
+	});
+	clip.on('complete', function(client, args, e) {
+        layer.msg("复制成功, 内容为："+ args.text)
+	});
+
+    clip.on('error', function (e) {
+        layer.tips("复制失败", e.trigger)
+    });
+}
+
+//删除
+function del() {
+	var ids = [];
+	var cols = [];
+	/*$.each(datagrid.datagrid("getSelections"), function(i, item) {
+		ids.push(item.id);
+		cols.push(item.table_name);
+	});*/
+	if(ids.length < 1) {
+		showWarnMsg("请选择需要删除的数据！");
+		return;
+	}
+	confirmMsg("确认删除？", function() {
+		$.post("delete", {id: ids, col: cols}, function(data) {
+			showMsg("删除成功！");
+			datagrid.datagrid("reload");
+		});
+	});
+}
+
+/**
+ * 扩展按钮
+ */
+function extendBtn() {
+	var ids = [];
+	debugger
+    var checkStatus = layui.table.checkStatus('formtbl'), data = checkStatus.data;
+	if(data.length != 1) {
+		showWarnMsg("请选择一条数据！");
+		return;
+	}
+	top.addMainTab("扩展按钮", "${basePath}/zcurd/1/listPage?head_id=" + data[0].id);
+}
+
+
+function reload() {
+    layui.table.reload('formtbl', {where : getPara()});
+}
+
+/**
+ * 扩展JS
+ */
+function extendJs() {
+	var ids = [];
+    var checkStatus = layui.table.checkStatus('formtbl'), data = checkStatus.data;
+	if(data.length != 1) {
+		showWarnMsg("请选择一条数据！");
+		return;
+	}
+	top.addMainTab("扩展JS", "${basePath}/zcurd/2/listPage?head_id=" + data[0].id);
+}
+
+//搜索
+function zcurdSearch() {
+	var param = zcurdGetParam();
+	datagrid.datagrid("load", {
+		queryParams: param
+	})
+}
+
+function zcurdGetParam() {
+	var param = {};
+	$("#tb :input[name]").each(function(i, item) {
+		if($(item).val()) {
+			param[$(item).attr("name")] = $(item).val();	
+		}
+	});
+	return param;
+}
+
+function update() {
+    var checkStatus = layui.table.checkStatus('formtbl')
+        , data = checkStatus.data;
+	if(data.length != 1) {
+		showWarnMsg("请选择需要编辑的一条数据！");
+		return;
+	}
+	top.window.subPage.loadCurrDatagrid = function() {
+		showMsg("更新成功！");
+		//datagrid.datagrid("reload");
+        reload();
+	}
+	var id = data[0].id;
+	top.openWindow("编辑", "${basePath}/zcurdHead/updatePage?id=" + id, {width: 750, height: 500});
+}
+
+function genForm() {
+	top.window.subPage.reload = function() {
+		reload()
+	}
+	top.openWindow("生成表单", "${basePath}/zcurdHead/genFormPage");
+}
+
+//生成代码
+function genCode() {
+	var rowsSel = datagrid.datagrid("getSelections");
+	if(rowsSel.length != 1) {
+		showWarnMsg("请选择一条数据！");
+		return;
+	}
+	var id = rowsSel[0].id;
+	$.post("genCode", {headId: id}, function(data) {
+		log(data);
+		showMsg(data.msg);
+	});
+}
+
+//清除缓存
+function clearMeta() {
+	$.post("clearMeta", {}, function(data) {
+		log(data);
+		showMsg(data.msg);
+	});
+}
+</script>
+
+@include("/common/dialogWindow.html"){}
+@include("/common/foot.html"){}

@@ -1,0 +1,90 @@
+@include("/common/head.html"){}
+
+@//计算table列数
+@var columnSize=parseInt(strutil.split(head.dialog_size,'x')[0]);
+@if(columnSize < 700){
+	@columnSize=1;
+@}else{
+	@columnSize=2;
+@}
+
+ <div class="easyui-panel addPage ${columnSize > 1 ? 'multiple' }" data-options="fit:true,border:false,novalidate:true">
+    <form class="easyui-form" id="ff" method="post" data-options="novalidate:true">
+        <table class="table1">
+        @for(item in addFieldList){
+           	@if(itemLP.index == 0 || (itemLP.index + 0) % columnSize == 0){
+            <tr>
+           	@}
+           		<th><span>${item.column_name}：</span></th>
+               	<td>
+            @if(item.input_type == 'easyui-combobox'){
+	            	<div class="wrap_input"><input class="easyui-combobox" id="${item.field_name}" name="${item.field_name}" value="${queryPara[item.field_name!]!}" data-options="
+	            				${item.is_allow_null!0==0 ? 'required:true,'}
+	            				valueField: 'id',
+   								textField: 'text',
+   								fit: true,
+	            				data: [
+	            					{id:'', text:''}
+	            					@for(o in item.dict){
+	            					,{id:'${o.key}', text:'${o.value}'}
+	            					@}
+	            				]
+	            	" /></div>
+			@}else if(item.input_type == 'easyui-filebox_img'){
+			        <div class="wrap_input"><input class="easyui-filebox" type="text" name="${item.field_name}" id="${item.field_name}" data-options="fit: true${item.is_allow_null!0==0 ? ',required:true'},buttonText: '选择图片', accept1: 'image/*', onChange: function(){uploadFile('${item.field_name}')}"></input></div>
+					<div class="image_pre"><img id="${item.field_name}Img" src=""></div>
+			@}else if(item.input_type == 'textarea'){
+			        <div class="wrap_input textarea"><textarea name="${item.field_name}" id="${item.field_name}" class="easyui-validatebox" data-options="${item.is_allow_null!0==0 ? 'required:true'}" rows="5"></textarea></div>
+			@}else{
+               		<div class="wrap_input"><input class="${item.input_type}" type="text" name="${item.field_name}" id="${item.field_name}" value="${queryPara[item.field_name!]!}" data-options="fit: true${item.is_allow_null!0==0 ? ',required:true'}"></input></div>
+			@}
+           		</td>
+           	@if(itemLP.index != 0 && (itemLP.index + 1) % columnSize == 0){
+            </tr>
+           	@}
+        @}
+        @if(addFieldList.~size % columnSize != 0){
+           	@if((columnSize - addFieldList.~size % columnSize) == 1){
+            <td colspan="2"></td>
+	        @}
+	        @if((columnSize - addFieldList.~size % columnSize) == 2){
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+	        @}
+            </tr>
+        @}
+        </table>
+    </form>
+</div>
+<script type="text/javascript">
+top.window.subPage.save = save;
+function save() {
+	if($("#ff").form('enableValidation').form('validate')) {
+		$.post("add", getParam(), function(data) {
+			top.window.closeWindow();
+			top.window.subPage.loadCurrDatagrid();
+		});
+	}
+}
+function getParam() {
+	var param = {
+	    "headId": ${headId}
+		@for(item in addFieldList){
+		,"model.${item.field_name}": getInputValue("${item.field_name}")
+		@}
+	}
+	for(key in param) {
+		if(!param[key]) {
+			delete param[key];
+		}
+	}
+	return param;
+}
+
+//扩展js
+@for(item in jsList){
+	@if(strutil.contain(item.page ,"detail")){
+	${item.js_content!}
+	@}
+@}
+</script>

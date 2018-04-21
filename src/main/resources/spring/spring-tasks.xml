@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	                    http://www.springframework.org/schema/beans/spring-beans.xsd
+			            http://www.springframework.org/schema/task     
+			            http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+    <bean id="clientCallbackService" class="com.busi.service.impl.ClientCallbackServiceImpl"/>
+
+    <task:scheduler id="scheduler" pool-size="5"/>
+
+    <beans profile="mail">
+        <!--每日凌晨5:20邮件推送客户端卸载反馈和章节错乱反馈-->
+        <task:scheduled-tasks scheduler="scheduler">
+            <task:scheduled ref="clientCallbackService" method="uninstallCallback" cron="0 40 7 * * ?"/>
+            <task:scheduled ref="clientCallbackService" method="chapterErrorCallback" cron="0 45 7 * * ?"/>
+            <task:scheduled ref="clientCallbackService" method="searchCallback" cron="0 49 7 * * ?"/>
+        </task:scheduled-tasks>
+    </beans>
+
+</beans>

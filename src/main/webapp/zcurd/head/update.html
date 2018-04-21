@@ -1,0 +1,388 @@
+@include("/common/head.html"){}
+
+ <div id="zcurdHeadTable" class="easyui-layout add_content" data-options="fit:true, border:false">
+    <div data-options="region:'north', border:false" style="height: 72px;">
+    	<form id="ff" method="post">
+        <table cellpadding="5" width="100%">
+            <tr>
+                <th>表单名称:</th>
+                <td><input class="easyui-textbox" type="text" name="form_name" value="${model.form_name}" data-options="required:true" style="width: 120px;"></input></td>
+                <th>数据表名称:</th>
+                <td><input class="easyui-textbox" type="text" name="table_name" value="${model.table_name}" data-options="required:true" style="width: 120px;"></input></td>
+                <th>主键:</th>
+                <td><input class="easyui-textbox" type="text" name="id_field" value="${model.id_field}" data-options="required:true" style="width: 120px;"></input></td>
+            </tr>
+            <tr>
+                <th>弹窗大小:</th>
+                <td>
+                	<input name="dialog_size" value="${model.dialog_size}" class="easyui-combobox" data-options="
+                		valueField: 'id',
+        				textField: 'text',
+                		data:[
+                			{id:'400x300', text:'400x300'},
+                			{id:'600x400', text:'600x400'},
+                			{id:'700x500', text:'700x500'},
+                			{id:'800x600', text:'800x600'}
+               			]
+               		" style="width: 120px;"/>
+                </td>
+                <th></th>
+                <td></td>
+                <th></th>
+                <td></td>
+            </tr>
+        </table>
+    	</form>
+    </div>
+   	<div class="layui-form" data-options="region:'center', border:false" style="border-top-width: 1px;">
+            <!--<table id="dg" class="layui-table" lay-data="{height:315, url:'listField?head_id=${model.id}', page:true, id:'test'}" lay-filter="test">
+                <thead>
+                    <tr>
+                    	<th lay-data="{field:'id', checkbox:true}"></th>
+                        <th lay-data="{field:'field_name',width:100,editor:'textbox'}">字段名称</th>
+                        <th lay-data="{field:'column_name',width:120,editor:'textbox'}">列表列名</th>
+                        <th lay-data="{field:'data_type',width:80,editor:{type:'textbox',required:true}}">数据类型</th>
+                        <th lay-data="{field:'input_type',width:90,
+                        		editor:{
+                                    type:'combobox',
+                                    options:{
+                                        valueField:'value',
+                                        textField:'text',
+                                        panelHeight:'auto',
+                                        data: [{value:'easyui-textbox', text:'输入框'}, {value:'easyui-combobox', text:'下拉框'}
+                                        	   ,{value:'easyui-datebox', text:'日期框'},{value:'easyui-datetimebox', text:'时间框'}
+                                        	   ,{value:'textarea', text:'文本框'},{value:'easyui-numberspinner', text:'数字框'}
+                                        	   ,{value:'easyui-filebox_img', text:'图片上传框'}
+                                        	  ],
+                                        required:true,
+                                        onChange:function(n,o){
+                                             /*
+                                            var sqlinput;
+                                            $(this).parent().parent().parent().parent().parent().parent().parent().find('td').each(function(){
+                                                if($(this).attr('field') == 'dict_sql'){
+                                                    sqlinput = $(this).find('.textbox-value');
+                                                }
+                                            });
+                                            if(n=='easyui-combobox'){
+                                                sqlinput.val('aa');
+                                                sqlinput.prev().val('aa');
+                                            }*/
+                                        }
+                                    }
+                                }}">控件类型</th>
+                        <th lay-data="{field:'is_show_list',width:60,hidden:true,editor:{type:'checkbox'}}">列表显示</th>
+                        <th lay-data="{field:'is_allow_detail',width:60,hidden:true,editor:{type:'checkbox'}}">详情显示</th>
+                        <th lay-data="{field:'is_allow_update',width:60,hidden:true,editor:{type:'checkbox'}}">允许编辑</th>
+                        <th lay-data="{field:'is_allow_add',width:60,hidden:true,editor:{type:'checkbox'}}">允许增加</th>
+                        <th lay-data="{field:'is_search',width:60,hidden:true,editor:{type:'checkbox'}}">是否搜索</th>
+                        <th lay-data="{field:'search_type',width:60,hidden:true,
+                                editor:{
+                                    type:'combobox',
+                                    options:{
+                                        valueField:'value',
+                                        textField:'text',
+                                        panelHeight:'auto',
+                                        data: [{value:1, text:'值'}, {value:'2', text:'范围'}, {value:'3', text:'模糊'}],
+                                        required:true
+                                    }
+                                }}">搜索类型</th>
+                        <th lay-data="{field:'sort_type',width:60,hidden:true,
+                                editor:{
+                                    type:'combobox',
+                                    options:{
+                                        valueField:'value',
+                                        textField:'text',
+                                        panelHeight:'auto',
+                                        data: [{value:0, text:'默认'}, {value:'1', text:'升序'}, {value:'2', text:'降序'}],
+                                        required:true
+                                    }
+                                }}">初始排序</th>
+                        <th lay-data="{field:'is_sum',width:60,hidden:true,editor:{type:'checkbox'}}">是否汇总</th>
+                        <th lay-data="{field:'is_allow_null',width:60,editor:{type:'checkbox',options:{align:'center'}}}">允许为空</th>
+                        <th lay-data="{field:'column_length',width:40,editor:'textbox'}">列宽</th>
+                        <th lay-data="{field:'dict_sql',width:100,editor:'textbox'}">字典sql</th>
+                        <th lay-data="{field:'order_num',width:50,align:'center',editor:'textbox'}">顺序</th>
+                    </tr>
+                </thead>
+            </table>-->
+        <table id="dg" lay-filter="table"></table>
+        <!--<div id="tb" style="height:auto">
+            <a href="###" onclick="showHeadField(1)" class="easyui-linkbutton" data-options="toggle:true,group:'g1',selected:true" style="padding: 0px 4px;">数据</a>
+            <a href="###" onclick="showHeadField(2)" class="easyui-linkbutton" data-options="toggle:true,group:'g1'" style="padding: 0px 4px;">页面</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="append()">增加</a>
+            <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="removeit()">删除</a>
+        </div>
+        <script type="text/javascript">
+            var editIndex = undefined;
+            function endEditing(){
+                if (editIndex == undefined){return true}
+                if ($('#dg').datagrid('validateRow', editIndex)){
+                    editIndex = undefined;
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            function onClickCell(index, field){
+                $('#dg').datagrid('selectRow', index).datagrid('beginEdit', index);return;
+                if (editIndex != index){
+                    if (endEditing()){
+                        $('#dg').datagrid('selectRow', index)
+                                .datagrid('beginEdit', index);
+                        var ed = $('#dg').datagrid('getEditor', {index:index,field:field});
+                        if (ed){
+                            ($(ed.target).data('textbox') ? $(ed.target).textbox('textbox') : $(ed.target)).focus();
+                        }
+                        editIndex = index;
+                    } else {
+                        $('#dg').datagrid('selectRow', editIndex);
+                    }
+                }
+            }
+            function append(){
+                if (endEditing()){
+                    $('#dg').datagrid('appendRow',{is_show_list:1});
+                    editIndex = $('#dg').datagrid('getRows').length-1;
+                    $('#dg').datagrid('selectRow', editIndex)
+                            .datagrid('beginEdit', editIndex);
+                }
+            }
+            function removeit(){
+                $.each($("#dg").datagrid("getSelections"), function(i, item) {
+                    $('#dg').datagrid('deleteRow', $("#dg").datagrid("getRowIndex", item));
+                });
+                editIndex = undefined;
+            }
+            function accept(){
+                if (endEditing()){
+                    $('#dg').datagrid('acceptChanges');
+                }
+            }
+            function reject(){
+                $('#dg').datagrid('rejectChanges');
+                editIndex = undefined;
+            }
+            function getChanges(){
+                var rows = $('#dg').datagrid('getChanges');
+                alert(rows.length+' rows are changed!');
+            }
+        </script>-->
+   </div>
+</div>
+<script type="text/html" id="displayBar">
+    <input type="checkbox" name="is_show_list" value="{{d.is_show_list}}" lay-skin="switch" data-index="{{d.LAY_INDEX}}" lay-text="是|否" lay-filter="displayFilter" {{ d.is_show_list == 1 ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="detailBar">
+    <input type="checkbox" name="is_allow_detail" value="{{d.is_allow_detail}}" lay-skin="switch" data-index="{{d.LAY_INDEX}}" lay-text="是|否" lay-filter="detailFilter" {{ d.is_allow_detail == 1 ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="editBar">
+    <input type="checkbox" name="is_allow_update" value="{{d.is_allow_update}}" lay-skin="switch" data-index="{{d.LAY_INDEX}}" lay-text="是|否" lay-filter="editFilter" {{ d.is_allow_update == 1 ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="addBar">
+    <input type="checkbox" name="is_allow_add" value="{{d.is_allow_add}}" lay-skin="switch" data-index="{{d.LAY_INDEX}}" lay-text="是|否" lay-filter="addFilter" {{ d.is_allow_add == 1 ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="searchBar">
+    <input type="checkbox" name="is_search" value="{{d.is_search}}" lay-skin="switch" data-index="{{d.LAY_INDEX}}" lay-text="是|否" lay-filter="searchFilter" {{ d.is_search == 1 ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="chartBar">
+    <input type="checkbox" name="is_chart" value="{{d.is_chart}}" lay-skin="switch" data-index="{{d.LAY_INDEX}}" lay-text="是|否" lay-filter="chartFilter" {{ d.is_chart == 1 ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="sumBar">
+    <input type="checkbox" name="is_sum" value="{{d.is_search}}" lay-skin="switch" data-index="{{d.LAY_INDEX}}" lay-text="是|否" lay-filter="sumFilter" {{ d.is_sum == 1 ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="nullBar">
+    <input type="checkbox" name="is_search" value="{{d.is_search}}" lay-skin="switch" data-index="{{d.LAY_INDEX}}" lay-text="是|否" lay-filter="is_allow_null" {{ d.is_search == 1 ? 'checked' : '' }}>
+</script>
+<script type="text/html" id="stypeBar">
+    <select name="search_type" lay-ignore class="diag-table-select" data-index="{{d.LAY_INDEX}}">
+        <option value="1" {{ d.search_type == 1 ? 'selected' : ''}}>值</option>
+        <opti0iyutre'
+        on value="2" {{ d.search_type == 2 ? 'selected' : ''}}>范围</option>
+        <option value="3" {{ d.search_type == 3 ? 'selected' : ''}}>模糊</option>
+    </select>
+</script>
+<script type="text/html" id="orderBar">
+    <select name="order_type" lay-ignore class="diag-table-select" data-index="{{d.LAY_INDEX}}">
+        <option value="0" {{ d.search_type == 0 ? 'selected' : ''}}>默认</option>
+        <option value="1" {{ d.search_type == 1 ? 'selected' : ''}}>升序</option>
+        <option value="2" {{ d.search_type == 2 ? 'selected' : ''}}>降序</option>
+    </select>
+</script>
+<script type="text/javascript">
+
+    var tableData = [];
+    layui.use(['element', 'table', 'laydate', 'form'], function () {
+        var table = layui.table;
+        var form = layui.form;
+        var $ = layui.$;
+
+        var tbl = table.render({
+            elem: '#dg',
+            even: true
+            , url: 'listField?head_id=${model.id}'
+            , cellMinWidth: 120
+            , method: 'post'
+            , cols: [[
+                {field:'field_name', title: '字段名称',fixed: 'left', edit: true, align: 'center'},
+                {field:'column_name', title: '列表列名', edit: true, align: 'center'},
+                {field:'data_type', title: '数据类型', sort: true, align: 'center'},
+                {field:'input_type', title: '控件类型', sort: true, align: 'center'},
+                {field:'is_show_list', title: '列表显示', sort: true, toolbar: '#displayBar', align: 'center'},
+                {field:'is_allow_detail', title: '详情显示', toolbar: '#detailBar', align: 'center'},
+                {field:'is_allow_update', title: '允许编辑', toolbar: '#editBar', align: 'center'},
+                {field:'is_allow_add', title: '允许增加', toolbar: '#addBar', align: 'center'},
+                {field:'is_search', title: '是否搜索', toolbar: '#searchBar', align: 'center'},
+                {field:'search_type', title: '搜索类型', toolbar: '#stypeBar', align: 'center'},
+                {field:'sort_type', title: '初始排序', toolbar: '#orderBar', align: 'center'},
+                {field:'is_sum', title: '是否汇总', toolbar: '#sumBar', align: 'center'},
+                {field:'is_allow_null', title: '允许为空', toolbar: '#nullBar', align: 'center'},
+                {field:'is_chart', title: '开启图表', toolbar: '#chartBar', align: 'center'},
+                {field:'column_length', title: '列宽', edit: true, align: 'center'},
+                {field:'dict_sql', title: '字典sql', toolbar: '#toolBar', align: 'center'},
+                {field:'order_num', title: '顺序', edit: true, align: 'center'}
+            ]]
+            , page: false
+            , id: 'formtbl'
+            , loading: true
+            , height: 325
+            , text: {none: '暂无相关数据'}
+            , done: function (res, curr, count) {
+                //处理复制
+                $.each($(".copy-btn"), function(i, o) {
+                    copyUrl($(o).get(0), $(o).data("id"));
+                });
+                tableData = res.data;
+                $(".diag-table-select").each(function (i, o) {
+                    $(o).on('change', function () {
+                        var index = $(this).data('index');
+                        var field = $(this).attr("name");
+                        var val = $.trim($(this).val());
+                        tableData[index-1][field] = val;
+                    })
+                })
+            }
+        });
+
+        var switchs=['displayFilter','detailFilter','editFilter','addFilter','searchFilter','sumFilter','nullFilter', 'chartFilter'];
+        $.each(switchs, function (i, o) {
+            form.on('switch('+o+')', function(obj){
+                var val=0;
+                var index = obj.othis.prev().data("index");
+                var field = obj.othis.prev().attr("name");
+                if(obj.elem.checked){
+                    val=1;
+                }
+                obj.othis.prev().val(val)
+                tableData[index-1][field] = val;
+                console.info(JSON.stringify(tableData[index-1]))
+            });
+        });
+
+        //监听单元格编辑
+        table.on('edit(table)', function(obj){
+            var value = $.trim(obj.value) //得到修改后的值
+                ,data = obj.data //得到所在行所有键值
+                ,field = obj.field; //得到字段
+//            layer.msg('[ID: '+ data.id +'] ' + field + ' 字段更改为：'+ value);
+            tableData[data.LAY_TABLE_INDEX][field] = value;
+            //$(".layui-table-edit").hide();
+        });
+
+        var active = {
+            add: function () {
+                add();
+            },
+            edit: function () {
+                update();
+            },
+            del: function () {
+                del();
+            },
+            detail: function () {
+                detail();
+            },
+            reload: function () {
+                reload();
+            },
+            export: function () {
+                var param = getPara();
+                window.location.href = "exportCsv?" + $.param(param);
+            },
+            reset: function(){
+                flushPage();
+            }
+        };
+
+        $('.layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        $('.date_type').each(function(i ,o){
+            laydate.render({elem: o});
+        })
+
+    });
+
+
+top.window.subPage.save = save;
+function save(successFunc) {
+	if($("#zcurdHeadTable").form('validate')) {
+		//accept();
+		var param = getParam();
+		param.rowsStr = JSON.stringify(tableData);
+		$.post("update", param, function(data) {
+			if(successFunc) {
+				successFunc();
+			}
+			top.window.closeWindow();
+			top.window.subPage.loadCurrDatagrid();
+		});
+	}
+}
+function getParam() {
+	return {
+		"model.id": ${model.id},
+		"model.form_name": $(":input[name='form_name']").val(), 
+		"model.table_name": $(":input[name='table_name']").val(), 
+		"model.id_field": $(":input[name='id_field']").val(), 
+		"model.is_auto": $(":checked[name='is_auto']").val(),
+		"model.dialog_size": $(":input[name='dialog_size']").val()
+	}
+}
+function submitForm(){
+    $('#ff').form('submit');
+}
+function clearForm(){
+    $('#ff').form('clear');
+}
+
+var headFieldList = [
+	{field:"field_name", type: 1},
+	{field:"is_allow_null", type: 1},
+	{field:"column_length", type: 1},
+	{field:"dict_sql", type: 1},
+	{field:"order_num", type: 1},
+	{field:"data_type", type: 1},
+	{field:"is_show_list", type: 2},
+	{field:"is_allow_detail", type: 2},
+	{field:"is_allow_update", type: 2},
+	{field:"is_allow_add", type: 2},
+	{field:"is_search", type: 2},
+	{field:"search_type", type: 2},
+	{field:"sort_type", type: 2},
+	{field:"is_sum", type: 2}
+];
+function showHeadField(type) {
+	type = type || 1;
+	var dg = $("#dg");
+	$.each(headFieldList, function(i, item) {
+		if(item.type == type) {
+			dg.datagrid("showColumn", item.field);
+		}else {
+			dg.datagrid("hideColumn", item.field);
+		}
+	});
+}
+</script>
+@include("/common/foot.html"){}

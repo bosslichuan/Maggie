@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title></title></head>
+<body style="font-size:10px;font-family:Microsoft Yahei,Arial">
+<div style="padding:10px 0px; min-width:340px; overflow-x: auto;">
+    <table border="1px"
+           style="font-size:10px;table-layout: fixed;border-collapse:collapse;text-align:center;background-color:transparent;width:100%;border-color:#ddd">
+        <tr style="background-color:#337ab7;color: #fff;">
+            <th style="padding:5px 1px;width: 15%">时间</th>
+            <th style="padding:5px">域名</th>
+            <th style="padding:5px">书籍名称</th>
+            <th style="padding:5px">书籍ID</th>
+            <th style="padding:5px">用户ID</th>
+            <th style="padding:5px">联系方式</th>
+            <th style="padding:5px">举报原因</th>
+            <th style="padding:5px">举报内容</th>
+        </tr>
+        <%
+        for(r in list){
+            if(rLP.even){
+        %>
+        <tr style="background-color:#ffffff">
+            <%
+            }else{
+            %>
+        <tr style="background-color:#f1f1f1">
+            <%
+            }
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px 1px">${r.date_time}</td>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.host}</td>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.book_name}</td>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.book_id}</td>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.uid}</td>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.tel}</td>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.report_reason}</td>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.report_content}</td>
+        </tr>
+        <%
+        }
+        %>
+    </table>
+</div>
+</body>
+</html>

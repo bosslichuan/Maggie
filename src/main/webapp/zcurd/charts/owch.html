@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>zcurd</title>
+    <style type="text/css">
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 30px;
+            color: #2f8ec7;
+        }
+
+        h2, .color1 {
+            color: orange;
+        }
+
+        .zhichi {
+            border: 2px solid orange;
+            padding: 2px;
+            font-size: 22px;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 30px;
+            text-align: center;
+            cursor: pointer;
+            position: fixed;
+            bottom: 50px;
+            right: 50px;
+        }
+
+        .chardiv {
+            width: 100%;
+            height: 400px;
+            margin: 2% 2%;
+        }
+    </style>
+    <script type="text/javascript" src="../../res/js/jquery-easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="../../res/js/echarts.min.js"></script>
+</head>
+<body>
+<div style="height: 100%;width: 100%;padding: 5px 5px;">
+    <p>72小时内新老用户充值走势</p>
+    <div id="mychart1" class="chardiv"></div>
+    <div id="mychart2" class="chardiv"></div>
+    <div id="mychart3" class="chardiv"></div>
+    <div id="mychart4" class="chardiv"></div>
+
+    <div class="zhichi" onclick="zhichi()">+</div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var myChart1 = echarts.init(document.getElementById('mychart1'));
+        var myChart2 = echarts.init(document.getElementById('mychart2'));
+        var myChart3 = echarts.init(document.getElementById('mychart3'));
+        var myChart4 = echarts.init(document.getElementById('mychart4'));
+        myChart1.showLoading({text: '正在努力的读取数据中...'});
+        myChart2.showLoading({text: '正在努力的读取数据中...'});
+        myChart3.showLoading({text: '正在努力的读取数据中...'});
+        myChart4.showLoading({text: '正在努力的读取数据中...'});
+        var xdata = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'];
+        $.get("/zcurd/owch/chart/chartdata", function (ret) {
+
+            // 指定图表的配置项和数据
+            var option1 = {
+                title: {
+                    text: '新用户充值人数走势'
+                },
+                tooltip: {trigger: 'axis'},
+                grid: {
+                    x: '12%',
+                },
+                legend: {
+                    data: ret.dateList
+                },
+                animation: false,
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: xdata,
+                    axisLabel: {
+                        formatter: function (val) {
+                            return val + "时";
+                        }
+                    }
+                },
+                yAxis: {},
+                series: ret.newcnt
+            };
+            myChart1.hideLoading();
+            myChart1.setOption(option1);
+
+            var option2 = {
+                title: {
+                    text: '老用户充值人数走势'
+                },
+                tooltip: {trigger: 'axis'},
+                grid: {
+                    x: '12%',
+                },
+                legend: {
+                    data: ret.dateList
+                },
+                animation: false,
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: xdata,
+                    axisLabel: {
+                        formatter: function (val) {
+                            return val + "时";
+                        }
+                    }
+                },
+                yAxis: {},
+                series: ret.oldcnt
+            };
+            // 使用刚指定的配置项和数据显示图表。
+            myChart2.hideLoading();
+            myChart2.setOption(option2);
+
+            var option3 = {
+                title: {
+                    text: '新用户充值金额走势'
+                },
+                legend: {
+                    data: ret.dateList
+                },
+                tooltip: {trigger: 'axis'},
+                grid: {
+                    x: '12%',
+                },
+                animation: false,
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: xdata,
+                    axisLabel: {
+                        formatter: function (val) {
+                            return val + "时";
+                        }
+                    }
+                },
+                yAxis: {},
+                series: ret.newamt
+            };
+            // 使用刚指定的配置项和数据显示图表。
+            myChart3.hideLoading();
+            myChart3.setOption(option3);
+
+            var option4 = {
+                title: {
+                    text: '老用户充值金额走势'
+                },
+                tooltip: {trigger: 'axis'},
+                grid: {
+                    x: '12%',
+                },
+                legend: {
+                    data: ret.dateList
+                },
+                animation: false,
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: xdata,
+                    axisLabel: {
+                        formatter: function (val) {
+                            return val + "时";
+                        }
+                    }
+                },
+                yAxis: {},
+                series: ret.oldamt
+            };
+            // 使用刚指定的配置项和数据显示图表。
+            myChart4.hideLoading();
+            myChart4.setOption(option4);
+        })
+    });
+
+    /*function zhichi() {
+     var d = document.getElementById("block_zczz");
+     if (d.style.display == "none") {
+     d.style.display = "block";
+     } else {
+     d.style.display = "none";
+     }
+     }*/
+
+</script>
+</body>
+</html>

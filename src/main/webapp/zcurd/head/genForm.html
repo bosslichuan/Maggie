@@ -1,0 +1,226 @@
+@include("/common/head.html"){}
+
+<!--<table id="dg" class="easyui-datagrid"
+        data-options="
+        	rownumbers:true,
+        	fit:true,
+        	border:false,
+        	rownumbers:true,
+        	singleSelect:true,
+        	toolbar:'#tb',
+        	remoteSort:false,
+            multiSort:true,
+            collapsible:true,
+        	pagination:false">
+    <thead>
+        <tr>
+            <th data-options="field:'TABLE_SCHEMA',width:100">数据库</th>
+            <th data-options="field:'TABLE_NAME',width:200">表名</th>
+            <th data-options="field:'TABLE_COMMENT',width:200">表说明</th>
+            <th data-options="field:'TABLE_TYPE',width:100">表类型</th>
+        </tr>
+    </thead>
+</table>-->
+<!--<div id="tb" style="padding:2px 5px;">
+    <div class="wrap_search">
+    	<span class="search_item" style="padding: 4px;">
+            <span class="item_text">数据源: </span>
+            <span class="item_obj">
+                <input class="easyui-combobox" type="text" id=db_source name="db_source" value="zcurd_busi" data-options="
+                    	url: '${basePath}/common/getDictData?queryParams[dict_type]=db_source',
+                    	valueField:'dict_key',
+                		textField:'dict_value'
+                "/>
+            </span>    
+        </span>
+        <span class="search_item" style="padding: 4px;">
+            <span class="item_text">表名: </span>
+            <span class="item_obj">
+                <input class="easyui-textbox" type="text" id="TABLE_NAME" name="TABLE_NAME"/>
+            </span>    
+        </span>
+        <span class="search_item" style="padding: 4px; padding-left: 40px;">
+            <a href="#" class="easyui-linkbutton" iconCls="icon-search" onclick="go()">搜索</a>　　　　　　
+        </span>
+    </div>
+</div>-->
+<div id="tb" style="padding:10px 15px;">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">数据源: </label>
+            <div class="layui-input-inline">
+                <input class="easyui-combobox" type="text" id=db_source name="db_source" value="zcurd_busi" data-options="
+                    	url: '${basePath}/common/getDictData?queryParams[dict_type]=db_source',
+                    	valueField:'dict_key',
+                		textField:'dict_value'
+                "/>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">数据库表名: </label>
+            <div class="layui-input-inline">
+                <input type="text" name="TABLE_NAME" autocomplete="off" class="layui-input" value="">
+            </div>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-sm layui-btn-normal" data-type="reload">
+                <i class="layui-icon">&#xe615;</i>
+                查询
+            </button>
+        </div>
+    </div>
+</div>
+
+<table id="dg"></table>
+
+<script type="text/javascript">
+top.window.subPage.save = function() {
+//	var rowsSel = datagrid.datagrid("getSelections");
+    var checkStatus = layui.table.checkStatus('formtbl')
+        , data = checkStatus.data;
+    debugger
+	if(data.length != 1) {
+		showWarnMsg("请选择一条数据！");
+		return;
+	}
+	$.post("genForm", {tableName: data[0].TABLE_NAME, db_source: $(":input[name='db_source']").val(), type : data[0].TABLE_TYPE}, function(data) {
+		if(data.result == "success") {
+			showMsg("表单生成成功！");
+			top.window.closeWindow();
+			top.window.subPage.reload();
+		}
+	});	
+}
+
+
+var datagrid = $("#dg");
+var dbSource = "";
+var rows = [];
+$(function() {
+    layui.use(['element', 'table', 'laydate'], function () {
+        var element = layui.element;
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var $ = layui.$;
+
+        var tbl = table.render({
+            elem: '#dg',
+            even: true
+            , url: 'genFormData'
+            , cellMinWidth: 100
+            , method: 'post'
+            , cols: [[
+                {field:'id', checkbox:true, width:'5%'},
+                {title: '序号', type: 'numbers' ,sort: false, width:'5%'},
+                {field:'TABLE_SCHEMA', title: '数据库',sort: true,width:'20%'},
+                {field:'TABLE_NAME', title: '数据库表名', sort: true,width:'30%'},
+                {field:'TABLE_COMMENT', title: '说明', sort: true,width:'20%'},
+                {field:'TABLE_TYPE', title: '表类型', sort: true,width:'15%'},
+            ]]
+            , page: true
+            , id: 'formtbl'
+            , loading: true
+            , size: 'sm'
+            , where: {db_source: $(":input[name='db_source']").val()}
+            , text: {none: '暂无相关数据'}
+            , done: function (res, curr, count) {
+                //处理复制
+                $.each($(".copy-btn"), function(i, o) {
+                    copyUrl($(o).get(0), $(o).data("id"));
+                });
+            }
+        });
+
+        //监听工具条
+        table.on('tool(formtbl)', function (obj) {
+            alert();
+            var data = obj.data;
+            debugger
+            if (obj.event === 'preview') {
+                preview();
+            } else if (obj.event === 'copy') {
+            }
+        });
+
+        var active = {
+            add: function () {
+                add();
+            },
+            edit: function () {
+                update();
+            },
+            del: function () {
+                del();
+            },
+            detail: function () {
+                detail();
+            },
+            reload: function () {
+                tbl.reload({where : getPara()});
+            },
+            export: function () {
+                var param = getPara();
+                window.location.href = "exportCsv?" + $.param(param);
+            },
+            reset: function(){
+                flushPage();
+            }
+        };
+
+        $('.layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        $('.date_type').each(function(i ,o){
+            laydate.render({elem: o});
+        })
+
+        function getPara(){
+            var param = {};
+            $("#tb :input[name]").each(function (i, item) {
+                if ($(item).val()) {
+                    param[$(item).attr("name")] = $(item).val();
+                }
+            });
+            return param;
+        }
+    });
+});
+
+function showData() {
+	$.post("genFormData",{db_source: $(":input[name='db_source']").val()}, function(data) {
+		rows = data.rows;
+		datagrid.datagrid("loadData", searchData());
+	});
+}
+
+function searchData() {
+	var tableName = $("#TABLE_NAME").val();
+	if(!tableName) {
+		return rows;
+	}
+	var filterRows = [];
+	$.each(rows, function(i, item) {
+		if(item.TABLE_NAME.indexOf(tableName) >= 0) {
+			filterRows.push(item);
+		}
+	});
+	return filterRows;
+}
+
+function go() {
+	var newDbSource = $(":input[name='db_source']").val();
+	if(dbSource != newDbSource) {
+		dbSource = newDbSource;
+		showData();
+	}
+	datagrid.datagrid("loadData", searchData());
+}
+
+function filterData(rows) {
+	log(rows);
+}
+</script>
+
+@include("/common/foot.html"){}

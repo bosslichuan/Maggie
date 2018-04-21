@@ -1,0 +1,103 @@
+@include("/common/head.html"){}
+
+@//计算table列数
+@var columnSize=parseInt(strutil.split(head.dialog_size,'x')[0]);
+@if(columnSize < 700){
+@columnSize=1;
+@}else{
+@columnSize=2;
+@}
+ <div class="easyui-panel updatePage ${columnSize > 1 ? 'multiple'}" data-options="fit:true,border:false">
+    <form id="ff" class="easyui-form" method="post">
+        <table class="table1">
+       	@for( item in updateFieldList ){
+           	@if( itemLP.index == 1 || itemLP.index % columnSize == 0 ){
+            <tr>
+           	@}
+           		<th><span>${item.column_name}：</span></th>
+               	<td>
+            @if( item.is_allow_update == 1 ){
+               	@if( item.input_type == 'easyui-combobox' ){
+               		<div class="wrap_input"><input id="${item.field_name}" name="${item.field_name}" id="${item.field_name}" class="easyui-combobox" value="${model[item.field_name]!''}" data-options="
+               				${item.is_allow_null!0==0 ? 'required:true,'}
+               				valueField: 'id',
+        					textField: 'text',
+        					fit: true,
+        					data:[
+        						{id:'', text:''}
+        						@for(o in item.dict){
+        						,{id:'${o.key}', text:'${o.value}'}
+        						@}
+	               			]
+               		"/></div>
+               	@} else if( item.input_type == 'easyui-filebox_img' ){
+			        <div class="wrap_input">
+                        <input class="easyui-filebox" type="text" name="${item.field_name}" id="${item.field_name}" value="${model[item.field_name]!''}" data="${model[item.field_name]!''}"
+                               data-options="fit: true ${item.is_allow_null!0==0 ? ',required:true'},buttonText: '选择图片', accept1: 'image/*', onChange: function(){uploadFile('${item.field_name}')}"/>
+                    </div>
+					<div class="image_pre" @if(model[item.field_name]){
+                         style="display: block;"
+                         @}
+                    ><img id="${item.field_name}Img" src="${basePath}${model[item.field_name]!''}"></div>
+               	@} else if( item.input_type == 'textarea' ){
+               		<div class="wrap_input textarea"><textarea name="${item.field_name}" id="${item.field_name}" rows="5" class="easyui-validatebox" data-options="${item.is_allow_null!0==0 ? 'required:true'}">${model[item.field_name]!''}</textarea></div>
+               	@} else {
+               		<div class="wrap_input"><input class="${item.input_type}" type="text" name="${item.field_name}" id="${item.field_name}" value="${model[item.field_name]!''}" data-options="fit: true ${item.is_allow_null!0==0 ? ',required:true'}"></input></div>
+               	@}
+             @} else {
+               		<span class="item" id="${item.field_name}">${model[item.field_name]!''}</span>
+             @}
+           		</td>
+           		
+           	@if( itemLP.index != 1 && (itemLP.index + 1) % columnSize == 0 ){
+            </tr>
+           	@}
+         @}
+         @if( updateFieldList.~size % columnSize != 0 ){
+           	@if( (columnSize - updateFieldList.~size % columnSize) == 1 ){
+                <td colspan="2"></td>
+	        @}
+	        @if( (columnSize - updateFieldList.~size % columnSize) == 2 ){
+                <td colspan="2"></td>
+                <td colspan="2"></td>
+	        @}
+            </tr>
+        @}
+        </table>
+    </form>
+</div>
+<script type="text/javascript">
+top.window.subPage.save = save;
+function save() {
+	if($("#zcurdHeadTable").form('validate')) {
+		$.post("update", getParam(), function(data) {
+			top.window.closeWindow();
+			top.window.subPage.loadCurrDatagrid();
+		});
+	}
+}
+function getParam() {
+	var param = {
+	    "headId": '${headId}',
+	    "id": '${model[head.id_field]}'
+		@for( item in updateFieldList ){
+	        @if( item.is_allow_update == 1 ){
+       	    ,"model.${item.field_name}": getInputValue("${item.field_name}")
+            @}
+		@}
+	}
+	for(key in param) {
+		if(!param[key]) {
+			delete param[key];
+		}
+	}
+	return param;
+}
+
+//扩展js
+@for( item in jsList ){
+	@if( strutil.contain(item.page ,"detail") ){
+${item.js_content!}
+	@}
+@}
+</script>

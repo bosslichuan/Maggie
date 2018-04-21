@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title></title></head>
+<body style="font-size:10px;font-family:Microsoft Yahei,Arial">
+<div style="padding:10px 0px; min-width:340px; overflow-x: auto;">
+    <div style="padding: 10px 0px;background-color: #d9edf7;border: 1px solid #ddd;border-top-left-radius: 10px;border-top-right-radius: 10px;text-align:center">
+        UV数据
+    </div>
+    <table border="1px"
+           style="font-size:10px;table-layout: fixed;border-collapse:collapse;text-align:center;background-color:transparent;width:100%;border-color:#ddd">
+        <tr style="background-color:#337ab7;color: #fff;">
+            <th style="padding:5px 1px;width: 7%">时间</th>
+            <th style="padding:5px">总人数UV</th>
+            <th style="padding:5px">总人数UV</th>
+            <th style="padding:5px">新用户UV</th>
+            <th style="padding:5px">新用户UV</th>
+            <th style="padding:5px">老用户UV</th>
+            <th style="padding:5px">老用户UV</th>
+        </tr>
+        <%
+        for(r in list){
+        if(rLP.even){
+        %>
+        <tr style="background-color:#ffffff">
+            <%
+            }else{
+            %>
+        <tr style="background-color:#f1f1f1">
+            <%
+            }
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px 1px">${r.hour}</td>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.v_cnt1}</td>
+            <%
+            if(isEmpty(r.v_cnt2)){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">-</td>
+            <%
+            }else if(r.v_cnt2 > r.v_cnt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#E9081E; padding:5px">${r.v_cnt2}
+            </td>
+            <%
+            }else if(r.v_cnt2 < r.v_cnt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#03AA46; padding:5px">${r.v_cnt2}
+            </td>
+            <%
+            }else{
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.v_cnt2}</td>
+            <%
+            }
+            %>
+
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.new_v_cnt1}</td>
+            <%
+            if(isEmpty(r.new_v_cnt2)){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">-</td>
+            <%
+            }else if(r.new_v_cnt2 > r.new_v_cnt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#E9081E; padding:5px">${r.new_v_cnt2}</td>
+            <%
+            }else if(r.new_v_cnt2 < r.new_v_cnt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#03AA46; padding:5px">${r.new_v_cnt2}</td>
+            <%
+            }else{
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.new_v_cnt2}</td>
+            <%
+            }
+            %>
+
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.old_v_cnt1}</td>
+            <%
+            if(isEmpty(r.old_v_cnt2)){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">-</td>
+            <%
+            }else if(r.old_v_cnt2 > r.old_v_cnt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#E9081E; padding:5px">${r.old_v_cnt2}</td>
+            <%
+            }else if(r.old_v_cnt2 < r.old_v_cnt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#03AA46; padding:5px">${r.old_v_cnt2}</td>
+            <%
+            }else{
+            %>
+            <td style="word-break: break-all; word-wrap:break-word; padding:5px">${r.old_v_cnt2}</td>
+            <%
+            }
+            %>
+        </tr>
+        <%
+        }
+        %>
+    </table>
+</div>
+<div style="padding:10px 0px; min-width:340px; overflow-x: auto;">
+    <div style="padding: 10px 0px;background-color: #d9edf7;border: 1px solid #ddd;border-top-left-radius: 10px;border-top-right-radius: 10px;text-align:center">
+        付费人数
+    </div>
+    <table border="1px"
+           style="font-size:10px;table-layout: fixed;border-collapse:collapse;text-align:center;background-color:transparent;width:100%;border-color:#ddd">
+        <tr style="background-color:#337ab7;color: #fff;">
+            <th style="padding:5px 1px;width: 7%">时间</th>
+            <th style="padding:5px">总付费人数</th>
+            <th style="padding:5px">总付费人数</th>
+            <th style="padding:5px">新用户付费</th>
+            <th style="padding:5px">新用户付费</th>
+            <th style="padding:5px">老用户付费</th>
+            <th style="padding:5px">老用户付费</th>
+        </tr>
+        <%
+        for(r in list){
+        if(rLP.even){
+        %>
+        <tr style="background-color:#ffffff">
+            <%
+            }else{
+            %>
+        <tr style="background-color:#f1f1f1">
+            <%
+            }
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px 1px">${r.hour}</td>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.cz_cnt1}</td>
+            <%
+            if(isEmpty(r.cz_cnt2)){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">-</td>
+            <%
+            }else if(r.cz_cnt2 > r.cz_cnt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#E9081E; padding:5px">${r.cz_cnt2}
+            </td>
+            <%
+            }else if(r.cz_cnt2 < r.cz_cnt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#03AA46; padding:5px">${r.cz_cnt2}
+            </td>
+            <%
+            }else{
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.cz_cnt2}</td>
+            <%
+            }
+            %>
+
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.new_cz_cnt1}</td>
+            <%
+            if(isEmpty(r.new_cz_cnt2)){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">-</td>
+            <%
+            }else if(r.new_cz_cnt2 > r.new_cz_cnt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#E9081E; padding:5px">${r.new_cz_cnt2}</td>
+            <%
+            }else if(r.new_cz_cnt2 < r.new_cz_cnt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#03AA46; padding:5px">${r.new_cz_cnt2}</td>
+            <%
+            }else{
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.new_cz_cnt2}</td>
+            <%
+            }
+            %>
+
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.old_cz_cnt1}</td>
+            <%
+            if(isEmpty(r.old_cz_cnt2)){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word; padding:5px">-</td>
+            <%
+            }else if(r.old_cz_cnt2 > r.old_cz_cnt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#E9081E; padding:5px">${r.old_cz_cnt2}</td>
+            <%
+            }else if(r.old_cz_cnt2 < r.old_cz_cnt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word; color:#03AA46; padding:5px">${r.old_cz_cnt2}</td>
+            <%
+            }else{
+            %>
+            <td style="word-break: break-all; word-wrap:break-word; padding:5px">${r.old_cz_cnt2}</td>
+            <%
+            }
+            %>
+        </tr>
+        <%
+        }
+        %>
+    </table>
+</div>
+<div style="padding:10px 0px; min-width:340px; overflow-x: auto;">
+    <div style="padding: 10px 0px;background-color: #d9edf7;border: 1px solid #ddd;border-top-left-radius: 10px;border-top-right-radius: 10px;text-align:center">
+        付费金额
+    </div>
+    <table border="1px"
+           style="font-size:10px;table-layout: fixed;border-collapse:collapse;text-align:center;background-color:transparent;width:100%;border-color:#ddd">
+        <tr style="background-color:#337ab7;color: #fff;">
+            <th style="padding:5px 1px;width: 7%">时间</th>
+            <th style="padding:5px">总用户付费金额</th>
+            <th style="padding:5px">总用户付费金额</th>
+            <th style="padding:5px">新用户付费金额</th>
+            <th style="padding:5px">新用户付费金额</th>
+            <th style="padding:5px">老用户付费金额</th>
+            <th style="padding:5px">老用户付费金额</th>
+        </tr>
+        <%
+        for(r in list){
+        if(rLP.even){
+        %>
+        <tr style="background-color:#ffffff">
+            <%
+            }else{
+            %>
+        <tr style="background-color:#f1f1f1">
+            <%
+            }
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px 1px">${r.hour}</td>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.cz_amt1}</td>
+            <%
+            if(isEmpty(r.cz_amt2)){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">-</td>
+            <%
+            }else if(r.cz_amt2 > r.cz_amt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#E9081E; padding:5px">${r.cz_amt2}
+            </td>
+            <%
+            }else if(r.cz_amt2 < r.cz_amt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#03AA46; padding:5px">${r.cz_amt2}
+            </td>
+            <%
+            }else{
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.cz_amt2}</td>
+            <%
+            }
+            %>
+
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.new_cz_amt1}</td>
+            <%
+            if(isEmpty(r.new_cz_amt2)){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">-</td>
+            <%
+            }else if(r.new_cz_amt2 > r.new_cz_amt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#E9081E; padding:5px">${r.new_cz_amt2}</td>
+            <%
+            }else if(r.new_cz_amt2 < r.new_cz_amt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#03AA46; padding:5px">${r.new_cz_amt2}</td>
+            <%
+            }else{
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.new_cz_amt2}</td>
+            <%
+            }
+            %>
+
+            <td style="word-break: break-all; word-wrap:break-word;padding:5px">${r.old_cz_amt1}</td>
+            <%
+            if(isEmpty(r.old_cz_cnt2)){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word; padding:5px">-</td>
+            <%
+            }else if(r.old_cz_amt2 > r.old_cz_amt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#E9081E; padding:5px">${r.old_cz_amt2}</td>
+            <%
+            }else if(r.old_cz_amt2 < r.old_cz_amt1){
+            %>
+            <td style="word-break: break-all; word-wrap:break-word;color:#03AA46; padding:5px">${r.old_cz_amt2}</td>
+            <%
+            }else{
+            %>
+            <td style="word-break: break-all; word-wrap:break-word; padding:5px">${r.old_cz_amt2}</td>
+            <%
+            }
+            %>
+        </tr>
+        <%
+        }
+        %>
+    </table>
+</div>
+</body>
+</html>

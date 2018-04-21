@@ -1,0 +1,464 @@
+@include("/common/head.html"){}
+@var easyui_type="easyui-textbox";
+@if(head.form_type == 2){
+<div id="subLayout" class="easyui-layout" data-options="fit:true, border:false">
+    <div data-options="region:'center', border:false">
+@}
+
+        <!--<table id="dg"></table>-->
+        <div id="tb" style="padding:10px 15px;" class="layui-form">
+            <div class="layui-form-item">
+                @for(item in fieldList){
+                @if(item.is_search == 1){
+                @switch(item.search_type){
+                @case 1:
+                @case 3:
+                @if(isNotEmpty(item.dict)){
+                <div class="layui-inline">
+                    <label class="layui-form-label">${item.column_name}: </label>
+                    <div class="layui-input-inline">
+                        <select name="${item.field_name}" lay-verify="" lay-search="true">
+                            <option value="">请选择</option>
+                            @for(o in item.dict){
+                            <option value="${o.key}" ${ o.key == queryPara[item.field_name!]! ? 'selected' : '' }>${o.value}</option>
+                            @}
+                        </select>
+                    </div>
+                </div>
+                @}else{
+                <div class="layui-inline">
+                    <label class="layui-form-label">${item.column_name}: </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="${item.field_name}" required  lay-verify="required"
+                               @if(item.search_type == 3){
+                               placeholder="模糊匹配"
+                               @}
+                               autocomplete="off" class="layui-input" value="${queryPara[item.field_name!]!}">
+                    </div>
+                </div>
+                @}
+                @break;
+                @case 2:
+                <div class="layui-inline">
+                    <label class="layui-form-label">${item.column_name}</label>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="_start_${item.field_name}" placeholder="￥" autocomplete="off" class="layui-input date_type" value="${queryPara[item.field_name!]!startDate}">
+                    </div>
+                    <div class="layui-form-mid" style="padding: 5px 0!important;">-</div>
+                    <div class="layui-input-inline" style="width: 100px;">
+                        <input type="text" name="_end_${item.field_name}" placeholder="￥" autocomplete="off" class="layui-input date_type" value="${queryPara[item.field_name!]!endDate}">
+                    </div>
+                </div>
+                @break;
+                @}
+                @}
+                @}
+            </div>
+            <!--<div style="text-align: left; margin:6px;">
+                <a href="javascript:void(0)" class="easyui-linkbutton addBtn" iconCls="glyphicon-plus" plain="true"
+                   onclick="add()">增加</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton updateBtn" iconCls="glyphicon-pencil" plain="true"
+                   onclick="update()">编辑</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton delBtn" iconCls="glyphicon-remove" plain="true"
+                   onclick="del()">删除</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton detailBtn" iconCls="glyphicon-map-marker"
+                   plain="true" onclick="detail()">详情</a>
+                <a href="javascript:void(0)" class="easyui-linkbutton exportBtn" iconCls="glyphicon-export" plain="true"
+                   onclick="exportCsv()">导出</a>
+                @for(item in topList){
+                <a href="#" class="easyui-linkbutton exBtn${item.id}" iconCls="${item.btn_icon}" plain="true"
+                   onclick="btnClick${item.id}(' + index + ')">${item.btn_name}</a>
+                @}
+                <div id="searchBtnWrap" style="float:right; padding-right:40px;">
+                    <a href="javascript:void(0)" class="easyui-linkbutton color1" iconCls="glyphicon-search"
+                       onclick="zcurdSearch(this)">搜索</a>
+                    <a href="javascript:void(0)" class="easyui-linkbutton color2" iconCls="glyphicon-repeat"
+                       onclick="flushPage()">重置</a>
+                </div>
+            </div>-->
+            <div class="layui-btn-group">
+                <button class="layui-btn layui-btn-sm addBtn" data-type="add">
+                    <i class="layui-icon">&#xe654;</i>
+                    添加
+                </button>
+                <button class="layui-btn layui-btn-sm updateBtn" data-type="edit">
+                    <i class="layui-icon">&#xe642;</i>
+                    编辑
+                </button>
+                <button class="layui-btn layui-btn-sm delBtn" data-type="del">
+                    <i class="layui-icon">&#xe640;</i>
+                    删除
+                </button>
+                <button class="layui-btn layui-btn-sm detailBtn" data-type="detail">
+                    <i class="layui-icon">&#xe621;</i>
+                    详情
+                </button>
+                <button class="layui-btn layui-btn-sm exportBtn" data-type="export">
+                    <i class="layui-icon">&#xe62d;</i>
+                    导出
+                </button>
+            </div>
+            <div class="layui-btn-group">
+                <button class="layui-btn layui-btn-sm layui-btn-normal" data-type="reload">
+                    <i class="layui-icon">&#xe615;</i>
+                    查询
+                </button>
+                <button class="layui-btn layui-btn-sm layui-btn-normal" data-type="reset">
+                    <i class="layui-icon">&#x1002;</i>
+                    重置
+                </button>
+                @for(item in fieldList){
+                @if(item.is_chart == 1){
+                <button class="layui-btn layui-btn-sm layui-btn-normal" data-type="charts" data-page="list">
+                    <i class="layui-icon">&#xe60d;</i>
+                    图表
+                </button>
+                @break;
+                @}
+                @}
+            </div>
+
+        </div>
+        <div class="layui-row" id="tableDiv">
+            <table class="layui-hide" id="dg" lay-filter="formtbl"></table>
+        </div>
+        <div style="display: none;padding: 10px 5px" id="chartDiv">
+            <!--<div class="layui-row layui-form">
+                <div class="layui-form-item">
+                        <label class="layui-form-label">X轴: </label>
+                        <div class="layui-input-block">
+                            @for(item in fieldList){
+                            <input type="radio" name="xarais" value="${item.column_name}" title="${item.column_name}">
+                            @}
+                        </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">Y轴: </label>
+                    <div class="layui-input-block layui-form" lay-filter="shitYser">
+                        @for(item in fieldList){
+                        <input type="checkbox" name="yarais" value="${item.field_name}" title="${item.column_name}" lay-skin="primary">
+                        @}
+                    </div>
+                </div>
+            </div>-->
+            <div id="mychart" style="height: 400px;margin: 20px 20px;min-width: 400px"></div>
+        </div>
+        @if(head.form_type == 2){
+    </div>
+    <div data-options="region:'east',split:true, border:false, collapsed:true, width:window.subPageWidth||'40%', title:window.subPageTitle||'子页面'">
+        <iframe id="subIframe" class="easyui-panel" data-options="fit:true,border:false"></iframe>
+    </div>
+</div>
+@}
+<script type="text/html" id="extendBtn">
+
+    @if(btnList.~size>0){
+    <div class="layui-btn-group">
+        @for (item in btnList) {
+        <button class="layui-btn layui-btn-primary layui-btn-xs" lay-event="extendBtn${item.id}">
+            ${item.btn_name}
+        </button>
+        @}
+    </div>
+    @}
+</script>
+<script type="text/javascript">
+
+    var smartHover='list';
+    var tableData = [];
+    // 列表选项卡
+    layui.use(['element', 'table', 'laydate', 'form'], function () {
+        var element = layui.element;
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var form = layui.form;
+        var $ = layui.$;
+        var myChart = echarts.init(document.getElementById('mychart'));
+        var resize = {
+            width: $(document).width() - 40,
+            height: 400
+        };
+        myChart.resize(resize);
+
+        var tbl = table.render({
+            elem: '#dg',
+            even: true
+            , url: 'listData'
+            , cellMinWidth: 80
+            , height: 'full-200'
+            , method: 'post'
+            , where: getPara()
+            , cols: [[
+                {field: '', checkbox: true},
+                {type: 'numbers', width: '5%', title: '序号' }
+                @for(item in fieldList) {
+                @if(item.is_show_list == 1 && item.field_name != head.id_field) {
+                ,{field:'${item.field_name}', title:'${item.column_name}', width: ${item.column_length == 0 ? 'auto' : item.column_length},sort: true, align: 'center'
+                @if (item.input_type == 'easyui-filebox_img') {
+                ,formatter: function (value) {
+                    return formatterDgImage(value);
+                }
+                @}
+                }
+                @}
+                @}
+
+                @if(btnList.~size>0){
+                ,{field:'lock', title: '操作', toolbar: '#extendBtn'}
+                @}
+            ]]
+            , page: true
+            , id: 'formtbl'
+            , loading: true
+            //, size: 'sm'
+            , text: {
+                none: '暂无相关数据' //默认：无数据。注：该属性为 layui 2.2.5 开始新增
+            }
+            , done: function (res, curr, count) {
+                tableData = res.data;
+                if(typeof onLoadSuccess === "function"){
+                    onLoadSuccess();
+                }
+            }
+        });
+
+        //监听工具条
+        table.on('tool(formtbl)', function (obj) {
+            var data = obj.data;
+            @if(btnList.~size>0){
+             @for(o in btnList){
+                    if (obj.event === 'extendBtn${o.id}') {
+                        btnClick${o.id}(obj);
+                    }
+                @}
+            @}
+            if (obj.event === 'preview') {
+                preview(data.id, data.form_name);
+            } else if (obj.event === 'copy') {
+            }
+        });
+
+        var active = {
+            add: function () {
+                add();
+            },
+            edit: function () {
+                update();
+            },
+            del: function () {
+                del();
+            },
+            detail: function () {
+                detail();
+            },
+            reload: function () {
+                if(smartHover == 'list'){
+                    tbl.reload({where : getPara()});
+                }else{
+                    drawChartData();
+                }
+            },
+            export: function () {
+                var param = getPara();
+                window.location.href = "exportCsv?" + $.param(param);
+            },
+            reset: function(){
+                flushPage();
+            },
+            charts: function(){
+                var page = $.trim($(this).data("page"));
+                if(page == 'list'){
+                    smartHover='chart';
+                    $("#tableDiv").hide();
+                    $("#chartDiv").show();
+                    $(this).data("page", "chart");
+                    $(this).html('<i class="layui-icon">&#xe60a;</i>列表');
+                    drawChartData();
+                }else{
+                    $("#chartDiv").hide();
+                    $("#tableDiv").show();
+                    smartHover='list';
+                    $(this).data("page", "list");
+                    $(this).html('<i class="layui-icon">&#xe60d;</i>图表');
+                }
+            }
+        };
+
+        $('.layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        $('.date_type').each(function(i ,o){
+            laydate.render({elem: o});
+        })
+
+        function drawChartData(){
+            myChart.showLoading({text: '正在努力的读取数据中...'});
+            $.ajax({
+                url: "getCharts",
+                type: "post",
+                data: getPara(),
+                success: function (ret) {
+                    myChart.hideLoading();
+                    myChart.setOption(ret);
+                }
+            });
+        }
+    });
+
+    $(function () {
+        handleAuthDataRule();
+        //datagrid.datagrid(dgOptions);
+    });
+
+
+    function getPara(){
+        var param = {};
+        $("#tb :input[name]").each(function (i, item) {
+            if ($(item).val()) {
+                param['queryParams['+$(item).attr("name") +']'] = $(item).val();
+            }
+        });
+        return param;
+    }
+
+    function zcurdSearch() {
+        layui.table.reload('formtbl', {where : getPara()});
+    }
+
+    function zcurdGetParam() {
+        var param = {};
+        $("#tb :input[name]").each(function (i, item) {
+            if ($(item).val()) {
+                param[$(item).attr("name")] = $(item).val();
+            }
+        });
+        return param;
+    }
+
+    function zcurdGetChartsParam() {
+        var param = {};
+        $("#chartDiv :input[name=yarais]").each(function (i, item) {
+            if ($(item).val()) {
+                param[$(item).attr("name")] = $(item).attr("title");
+            }
+        });
+        return param;
+    }
+
+
+    function getInitParam() {
+        var param = {};
+        $("#tb :input[name]").each(function (i, item) {
+            if ($(item).val()) {
+                param["queryParams[" + $(item).attr("name") + "]"] = $(item).val();
+            }
+        });
+        return param;
+    }
+
+    var initPara = zcurdGetParam();
+
+    function add() {
+        top.window.subPage.loadCurrDatagrid = function () {
+            showMsg("增加成功！");
+            datagrid.datagrid("load");
+        }
+        top.openWindow("${head.form_name}-增加", getCurrUrl("addPage") + "?" + $.param(initPara), {size: '${head.dialog_size!}'});
+    }
+
+    function update() {
+        var checkStatus = layui.table.checkStatus('formtbl'), data = checkStatus.data;
+        if (data.length != 1) {
+            showWarnMsg("请选择需要编辑的一条数据！");
+            return;
+        }
+        var id = data[0].${head.id_field};
+        top.window.subPage.loadCurrDatagrid = function () {
+            showMsg("更新成功！");
+            datagrid.datagrid("reload");
+        }
+        top.openWindow("${head.form_name}-编辑", getCurrUrl("updatePage") + "?id=" + id, {size: '${head.dialog_size!}'});
+    }
+
+    function del() {
+        var ids = [];
+        var checkStatus = layui.table.checkStatus('formtbl'), data = checkStatus.data;
+        $.each(data, function (i, item) {
+            ids.push(item.${head.id_field});
+        });
+        if (ids.length < 1) {
+            showWarnMsg("请选择需要删除的数据！");
+            return;
+        }
+        confirmMsg("确认删除？", function () {
+            $.post("delete", {id: ids}, function (data) {
+                showMsg("删除成功！");
+                zcurdSearch();
+            });
+        });
+    }
+
+    function detail() {
+        var rowsSel = datagrid.datagrid("getSelections");
+        if (rowsSel.length != 1) {
+            showWarnMsg("请选择需要查看的一条数据！");
+            return;
+        }
+        var id = rowsSel[0].${head.id_field};
+        top.openWindow("${head.form_name}-详情", getCurrUrl("detailPage") + "?id=" + id, {size: '${head.dialog_size!}'});
+    }
+
+    function exportCsv() {
+        var option = datagrid.datagrid("options");
+        var param = option.queryParams;
+        param.sortName = option.sortName;
+        param.sortOrder = option.sortOrder;
+        window.location.href = "exportCsv?" + $.param(param);
+    }
+
+    /**
+     * 打开子页
+     */
+    var _openSubPageFlag = false;
+
+    function _openSubPage(pageUrl) {
+        /*if (!_openSubPageFlag) {
+            $("#subLayout").layout("expand", "east");
+            setTimeout(function () {
+                $("#subIframe").attr("src", pageUrl);
+            }, 600);
+            _openSubPageFlag = true;
+        } else {
+            $("#subIframe").attr("src", pageUrl);
+        }*/
+        var index = layer.open({
+            type: 2,
+            title: '权限设置',
+            area: ['800px', '600px'], //宽高
+            fix: true, //不固定
+            maxmin: false,
+            content: pageUrl,
+            closeBtn: 0,
+            btn: ['保存', '取消'],
+            yes: function (index, layero) {
+            },
+            btnAlign: 'c'
+        });
+    }
+
+
+    //按钮事件
+    @for (item in btnList) {
+        window.btnClick${item.id}=${item.func_content};
+    @}
+
+    //扩展js
+    @for (item in jsList) {
+    @if (!strutil.contain(item.page ,"detail")) {
+            ${item.js_content!};
+    @}
+    @}
+</script>
+@include("/common/dialogWindow.html"){}
